@@ -144,7 +144,7 @@ impl generic::Writable for TxBufferElementHeader {}
 ///   other accesses to the register block.
 /// * `MSG_RAM` is a pointer to the Message RAM block and can be safely accessed
 /// for as long as ownership or a borrow of the implementing type is present.
-pub unsafe trait MsgRamExt {
+pub unsafe trait Instance {
     const MSG_RAM: *mut RegisterBlock;
     fn msg_ram(&self) -> &RegisterBlock {
         unsafe { &*Self::MSG_RAM }

@@ -24,9 +24,7 @@
 #[allow(clippy::all)] // generated code
 mod pac;
 use self::pac::generic::*; // To make the PAC extraction build
-
-//#[allow(clippy::all)] // generated code
-mod message_ram;
+pub use crate::pac::fdcan::RegisterBlock;
 
 /// Configuration of an FDCAN instance
 pub mod config;
@@ -40,6 +38,8 @@ pub mod frame;
 pub mod id;
 /// Interrupt Line Information
 pub mod interrupt;
+/// Message RAM block
+pub mod message_ram;
 
 mod sealed {
     pub trait Sealed {}
@@ -58,9 +58,6 @@ use frame::{RxFrameInfo, TxFrameHeader};
 use id::{Id, IdReg};
 use interrupt::{Interrupt, InterruptLine, Interrupts};
 
-use pac::fdcan::RegisterBlock;
-
-use message_ram::MsgRamExt;
 use message_ram::RxFifoElement;
 
 use core::cmp::Ord;
@@ -82,7 +79,7 @@ use core::ptr::NonNull;
 ///   register block.
 /// * `REGISTERS` is a pointer to that peripheral's register block and can be safely accessed for as
 ///   long as ownership or a borrow of the implementing type is present.
-pub unsafe trait Instance: MsgRamExt {
+pub unsafe trait Instance: message_ram::Instance {
     /// Pointer to the instance's register block.
     const REGISTERS: *mut RegisterBlock;
 }
@@ -522,6 +519,11 @@ impl<I> FdCan<I, PoweredDownMode>
 where
     I: Instance,
 {
+    /// Creates a [`FdCan`] interface with the default configuration
+    pub fn new(instance: I) -> Self {
+        Self::create_can(FdCanConfig::default(), instance)
+    }
+
     /// Moves out of PoweredDownMode and into ConfigMode
     #[inline]
     pub fn into_config_mode(mut self) -> FdCan<I, ConfigMode> {
