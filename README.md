@@ -16,3 +16,13 @@ Add an entry to your `Cargo.toml`:
 [dependencies]
 fdcan = "0.1.0"
 ```
+
+# Minimum supported Rust version
+
+The Minimum Supported Rust Version (MSRV) at the moment is **1.52.0**. Older
+versions **may** compile, especially when some features are not used
+in your application.
+
+# Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).

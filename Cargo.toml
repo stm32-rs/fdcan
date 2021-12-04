@@ -13,6 +13,10 @@ keywords = ["can", "hal", "bus"]
 categories = ["no-std", "embedded"]
 readme = "README.md"
 
+[package.metadata.docs.rs]
+features = ["fdcan_g0_g4_l5"]
+targets = ["thumbv7em-none-eabihf"]
+
 [features]
 fdcan_g0_g4_l5 = []             # Peripheral map found on G0 G4 L5
 fdcan_h7 = []                   # Peripheral map found on H7
