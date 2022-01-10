@@ -3,7 +3,7 @@ name = "fdcan"
 version = "0.1.0"
 authors = [
         "Richard Meadows <richard@richard.fish>",
-
+        "Cor Peters <c.peters@eekels.com>"
 ]
 edition = "2018"
 description = "STM32 FDCAN peripheral driver"
