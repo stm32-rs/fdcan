@@ -40,7 +40,7 @@ impl StandardId {
 
     /// Returns this CAN Identifier as a raw 16-bit integer.
     #[inline]
-    pub(crate) fn as_raw(&self) -> u16 {
+    pub fn as_raw(&self) -> u16 {
         self.0
     }
 }
@@ -86,7 +86,7 @@ impl ExtendedId {
 
     /// Returns this CAN Identifier as a raw 32-bit integer.
     #[inline]
-    pub(crate) fn as_raw(&self) -> u32 {
+    pub fn as_raw(&self) -> u32 {
         self.0
     }
 
