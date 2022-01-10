@@ -152,7 +152,6 @@ pub(crate) struct IdReg(u32);
 
 impl IdReg {
     const STANDARD_SHIFT: u32 = 18;
-    #[allow(dead_code)]
     const STANDARD_MASK: u32 = 0x1FFC0000;
 
     const EXTENDED_SHIFT: u32 = 0;
