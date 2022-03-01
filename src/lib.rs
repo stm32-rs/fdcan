@@ -65,7 +65,7 @@ use core::convert::Infallible;
 use core::convert::TryFrom;
 use core::marker::PhantomData;
 use core::ptr::NonNull;
-use core::slice;
+use core::{mem, slice};
 
 /// An FDCAN peripheral instance.
 ///
@@ -1300,13 +1300,10 @@ where
         tx_element.reset();
         tx_element.header.merge(tx_header);
 
-        let data = unsafe {
-            slice::from_raw_parts_mut(
-                tx_element.data.as_ptr() as *mut u8,
-                tx_header.len as usize,
-            )
-        };
-        data.copy_from_slice(buffer);
+        let data_len = ((tx_header.len as usize) + 3) / 4;
+
+        let data: &[u32] = unsafe { mem::transmute(buffer) };
+        tx_element.data[..data_len].copy_from_slice(&data[..data_len]);
 
         // Set <idx as Mailbox> as ready to transmit
         self.registers()
