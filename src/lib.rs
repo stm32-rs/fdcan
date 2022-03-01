@@ -1067,6 +1067,11 @@ where
     M: Receive,
 {
     /// Returns a received frame from FIFO_0 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length. It is recommended to
+    /// provide a buffer with maximum frame size.
     #[inline]
     pub fn receive0(
         &mut self,
@@ -1077,6 +1082,11 @@ where
     }
 
     /// Returns a received frame from FIFO_1 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length. It is recommended to
+    /// provide a buffer with maximum frame size.
     #[inline]
     pub fn receive1(
         &mut self,
@@ -1471,6 +1481,10 @@ where
     /// Returns a received frame if available.
     ///
     /// Returns `Err` when a frame was lost due to buffer overrun.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length.
     pub fn receive(
         &mut self,
         buffer: &mut [u8],
