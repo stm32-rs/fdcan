@@ -1310,7 +1310,7 @@ where
         tx_element.reset();
         tx_element.header.merge(tx_header);
 
-        let data_len = ((tx_header.len as usize) + 3) / 4;
+        let data_len = (tx_header.len as usize) / 4;
 
         let data: &[u32] = unsafe { mem::transmute(buffer) };
         tx_element.data[..data_len].copy_from_slice(&data[..data_len]);
