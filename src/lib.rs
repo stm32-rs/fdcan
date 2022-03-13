@@ -65,6 +65,7 @@ use core::convert::Infallible;
 use core::convert::TryFrom;
 use core::marker::PhantomData;
 use core::ptr::NonNull;
+use core::slice;
 
 /// An FDCAN peripheral instance.
 ///
@@ -1011,16 +1012,13 @@ where
     /// If all transmit mailboxes are full, this overwrites the mailbox with
     /// the lowest priority.
     #[inline]
-    pub fn transmit<WTX>(
+    pub fn transmit(
         &mut self,
         frame: TxFrameHeader,
-        write: &mut WTX,
-    ) -> nb::Result<Option<()>, Infallible>
-    where
-        WTX: FnMut(&mut [u32]),
-    {
+        buffer: &[u8],
+    ) -> nb::Result<Option<()>, Infallible> {
         // Safety: We have a `&mut self` and have unique access to the peripheral.
-        unsafe { Tx::<I, M>::conjure().transmit(frame, write) }
+        unsafe { Tx::<I, M>::conjure().transmit(frame, buffer) }
     }
 
     /// Puts a CAN frame in a free transmit mailbox for transmission on the bus.
@@ -1029,18 +1027,17 @@ where
     /// Transmit order is preserved for frames with identical identifiers.
     /// If all transmit mailboxes are full, `pending` is called with the mailbox,
     /// header and data of the to-be-replaced frame.
-    pub fn transmit_preserve<PTX, WTX, P>(
+    pub fn transmit_preserve<PTX, P>(
         &mut self,
         frame: TxFrameHeader,
-        write: &mut WTX,
+        buffer: &[u8],
         pending: &mut PTX,
     ) -> nb::Result<Option<P>, Infallible>
     where
         PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
-        WTX: FnMut(&mut [u32]),
     {
         // Safety: We have a `&mut self` and have unique access to the peripheral.
-        unsafe { Tx::<I, M>::conjure().transmit_preserve(frame, write, pending) }
+        unsafe { Tx::<I, M>::conjure().transmit_preserve(frame, buffer, pending) }
     }
 
     /// Returns `true` if no frame is pending for transmission.
@@ -1070,29 +1067,33 @@ where
     M: Receive,
 {
     /// Returns a received frame from FIFO_0 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length. It is recommended to
+    /// provide a buffer with maximum frame size.
     #[inline]
-    pub fn receive0<RECV, R>(
+    pub fn receive0(
         &mut self,
-        receive: &mut RECV,
-    ) -> nb::Result<ReceiveOverrun<R>, Infallible>
-    where
-        RECV: FnMut(RxFrameInfo, &[u32]) -> R,
-    {
+        buffer: &mut [u8],
+    ) -> nb::Result<ReceiveOverrun<RxFrameInfo>, Infallible> {
         // Safety: We have a `&mut self` and have unique access to the peripheral.
-        unsafe { Rx::<I, M, Fifo0>::conjure().receive(receive) }
+        unsafe { Rx::<I, M, Fifo0>::conjure().receive(buffer) }
     }
 
     /// Returns a received frame from FIFO_1 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length. It is recommended to
+    /// provide a buffer with maximum frame size.
     #[inline]
-    pub fn receive1<RECV, R>(
+    pub fn receive1(
         &mut self,
-        receive: &mut RECV,
-    ) -> nb::Result<ReceiveOverrun<R>, Infallible>
-    where
-        RECV: FnMut(RxFrameInfo, &[u32]) -> R,
-    {
+        buffer: &mut [u8],
+    ) -> nb::Result<ReceiveOverrun<RxFrameInfo>, Infallible> {
         // Safety: We have a `&mut self` and have unique access to the peripheral.
-        unsafe { Rx::<I, M, Fifo1>::conjure().receive(receive) }
+        unsafe { Rx::<I, M, Fifo1>::conjure().receive(buffer) }
     }
 }
 
@@ -1218,28 +1219,24 @@ where
     /// frame, which is returned via the closure 'pending'. If 'pending' is called; it's return value
     /// is returned via Option<P>, if it is not, None is returned.
     /// If there are only higher priority frames in the queue, this returns Err::WouldBlock
-    pub fn transmit<WTX>(
+    pub fn transmit(
         &mut self,
         frame: TxFrameHeader,
-        write: &mut WTX,
-    ) -> nb::Result<Option<()>, Infallible>
-    where
-        WTX: FnMut(&mut [u32]),
-    {
-        self.transmit_preserve(frame, write, &mut |_, _, _| ())
+        buffer: &[u8],
+    ) -> nb::Result<Option<()>, Infallible> {
+        self.transmit_preserve(frame, buffer, &mut |_, _, _| ())
     }
 
     /// As Transmit, but if there is a pending frame, `pending` will be called so that the frame can
     /// be preserved.
-    pub fn transmit_preserve<PTX, WTX, P>(
+    pub fn transmit_preserve<PTX, P>(
         &mut self,
         frame: TxFrameHeader,
-        write: &mut WTX,
+        buffer: &[u8],
         pending: &mut PTX,
     ) -> nb::Result<Option<P>, Infallible>
     where
         PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
-        WTX: FnMut(&mut [u32]),
     {
         let can = self.registers();
         let queue_is_full = self.tx_queue_is_full();
@@ -1276,7 +1273,7 @@ where
             (Mailbox::new(idx), None)
         };
 
-        self.write_mailbox(idx, frame, write);
+        self.write_mailbox(idx, frame, buffer);
 
         Ok(pending_frame)
     }
@@ -1304,35 +1301,34 @@ where
     }
 
     #[inline]
-    fn write_mailbox<TX, R>(
-        &mut self,
-        idx: Mailbox,
-        tx_header: TxFrameHeader,
-        transmit: TX,
-    ) -> R
-    where
-        TX: FnOnce(&mut [u32]) -> R,
-    {
+    fn write_mailbox(&mut self, idx: Mailbox, tx_header: TxFrameHeader, buffer: &[u8]) {
         let tx_ram = self.tx_msg_ram_mut();
 
-        // Clear mail slot; mainly for debugging purposes.
-        tx_ram.tbsa[idx as usize].reset();
+        let tx_element = &mut tx_ram.tbsa[idx as usize];
 
-        // Calculate length of data in words
+        // Clear mail slot; mainly for debugging purposes.
+        tx_element.reset();
+        tx_element.header.merge(tx_header);
+
+        let lbuffer = [0_u32; 16];
+
+        let data = unsafe {
+            slice::from_raw_parts_mut(
+                lbuffer.as_ptr() as *mut u8,
+                tx_header.len as usize,
+            )
+        };
+        data[..tx_header.len as usize]
+            .copy_from_slice(&buffer[..tx_header.len as usize]);
+
         let data_len = ((tx_header.len as usize) + 3) / 4;
 
-        //set header section
-        tx_ram.tbsa[idx as usize].header.merge(tx_header);
-
-        //set data
-        let result = transmit(&mut tx_ram.tbsa[idx as usize].data[0..data_len]);
+        tx_element.data[..data_len].copy_from_slice(&lbuffer[..data_len]);
 
         // Set <idx as Mailbox> as ready to transmit
         self.registers()
             .txbar
             .modify(|r, w| unsafe { w.ar().bits(r.ar().bits() | 1 << (idx as u32)) });
-
-        result
     }
 
     #[inline]
@@ -1495,27 +1491,33 @@ where
     /// Returns a received frame if available.
     ///
     /// Returns `Err` when a frame was lost due to buffer overrun.
-    pub fn receive<RECV, R>(
+    ///
+    /// # Panics
+    ///
+    /// Panics if `buffer` is smaller than the header length.
+    pub fn receive(
         &mut self,
-        receive: &mut RECV,
-    ) -> nb::Result<ReceiveOverrun<R>, Infallible>
-    where
-        RECV: FnMut(RxFrameInfo, &[u32]) -> R,
-    {
+        buffer: &mut [u8],
+    ) -> nb::Result<ReceiveOverrun<RxFrameInfo>, Infallible> {
         if !self.rx_fifo_is_empty() {
             let mbox = self.get_rx_mailbox();
             let idx: usize = mbox.into();
             let mailbox: &RxFifoElement = &self.rx_msg_ram().fxsa[idx];
 
             let header: RxFrameInfo = (&mailbox.header).into();
-            let word_len = (header.len + 3) / 4;
-            let result = Ok(receive(header, &mailbox.data[0..word_len as usize]));
+            let data = unsafe {
+                slice::from_raw_parts(
+                    mailbox.data.as_ptr() as *const u8,
+                    header.len as usize,
+                )
+            };
+            buffer[..header.len as usize].copy_from_slice(data);
             self.release_mailbox(mbox);
 
             if self.has_overrun() {
-                result.map(ReceiveOverrun::Overrun)
+                Ok(ReceiveOverrun::<RxFrameInfo>::Overrun(header))
             } else {
-                result.map(ReceiveOverrun::NoOverrun)
+                Ok(ReceiveOverrun::<RxFrameInfo>::NoOverrun(header))
             }
         } else {
             Err(nb::Error::WouldBlock)
