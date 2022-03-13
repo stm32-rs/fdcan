@@ -26,6 +26,43 @@ pub struct NominalBitTiming {
     pub sync_jump_width: NonZeroU8,
 }
 impl NominalBitTiming {
+    pub const BITRATE_1M: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(2) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+    pub const BITRATE_500K: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(4) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+    pub const BITRATE_250K: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(8) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+    pub const BITRATE_125K: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(16) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+    pub const BITRATE_100K: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(20) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+    pub const BITRATE_50K: NominalBitTiming = NominalBitTiming {
+        prescaler: unsafe { NonZeroU16::new_unchecked(40) },
+        seg1: unsafe { NonZeroU8::new_unchecked(13) },
+        seg2: unsafe { NonZeroU8::new_unchecked(2) },
+        sync_jump_width: unsafe { NonZeroU8::new_unchecked(1) },
+    };
+
     #[inline]
     pub(crate) fn nbrp(&self) -> u16 {
         u16::from(self.prescaler) & 0x1FF
