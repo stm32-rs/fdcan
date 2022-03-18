@@ -11,6 +11,7 @@ documentation = "https://docs.rs/fdcan/"
 repository = "https://github.com/stm32-rs/fdcan.git"
 keywords = ["can", "hal", "bus"]
 categories = ["no-std", "embedded"]
+license = "MIT/Apache-2.0"
 readme = "README.md"
 
 [package.metadata.docs.rs]
