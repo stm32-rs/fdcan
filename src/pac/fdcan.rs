@@ -2,6 +2,8 @@
 #[cfg(feature = "fdcan_g0_g4_l5")]
 pub use ie_g0_g4_l5 as ie;
 #[cfg(feature = "fdcan_g0_g4_l5")]
+pub use ile_g0_g4_l5 as ile;
+#[cfg(feature = "fdcan_g0_g4_l5")]
 pub use ils_g0_g4_l5 as ils;
 #[cfg(feature = "fdcan_g0_g4_l5")]
 pub use ir_g0_g4_l5 as ir;
@@ -12,6 +14,8 @@ pub use txbc_g0_g4_l5 as txbc;
 
 #[cfg(feature = "fdcan_h7")]
 pub use ie_h7 as ie;
+#[cfg(feature = "fdcan_h7")]
+pub use ile_h7 as ile;
 #[cfg(feature = "fdcan_h7")]
 pub use ils_h7 as ils;
 #[cfg(feature = "fdcan_h7")]
@@ -287,7 +291,8 @@ pub mod ils_h7;
 ///ILE register accessor: an alias for `Reg<ILE_SPEC>`
 pub type ILE = crate::Reg<ile::ILE_SPEC>;
 ///FDCAN Interrupt Line Enable Register
-pub mod ile;
+pub mod ile_g0_g4_l5;
+pub mod ile_h7;
 ///GFC register accessor: an alias for `Reg<GFC_SPEC>`
 pub type RXGFC = crate::Reg<rxgfc::RXGFC_SPEC>;
 ///FDCAN Global Filter Configuration Register
