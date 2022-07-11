@@ -213,13 +213,13 @@ impl IdReg {
         if self.is_extended() {
             Id::Extended(unsafe {
                 ExtendedId::new_unchecked(
-                    (self.0 >> Self::EXTENDED_SHIFT) & Self::EXTENDED_MASK,
+                    (self.0 & Self::EXTENDED_MASK) >> Self::EXTENDED_SHIFT,
                 )
             })
         } else {
             Id::Standard(unsafe {
                 StandardId::new_unchecked(
-                    ((self.0 >> Self::STANDARD_SHIFT) & Self::STANDARD_MASK) as u16,
+                    ((self.0 & Self::STANDARD_MASK) >> Self::STANDARD_SHIFT) as u16,
                 )
             })
         }
