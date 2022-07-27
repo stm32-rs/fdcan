@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/fdcan.svg)](https://crates.io/crates/fdcan)
 [![docs.rs](https://docs.rs/fdcan/badge.svg)](https://docs.rs/fdcan/)
-![CI](https://github.com/stm32-rs/fdcan/workflows/CI/badge.svg)
+![CI](https://github.com/stm32-rs/fdcan/actions/workflows/ci.yml/badge.svg)
 
 This crate implements a driver for the FDCAN peripheral found in high-end STM32
 microcontrollers (G0, G4, H7, L5 series). The other CAN peripheral found on
