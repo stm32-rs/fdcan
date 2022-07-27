@@ -2,6 +2,7 @@
 
 * Update Cargo.toml
 * Update CHANGELOG.md
+* Update version in README.md
 
 ```
 git commit -am 'v0.2.0'

@@ -14,7 +14,7 @@ Add an entry to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-fdcan = "0.1.0"
+fdcan = "0.1.1"
 ```
 
 # Minimum supported Rust version
