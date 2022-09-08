@@ -88,18 +88,27 @@ impl R {
     }
     pub fn to_data_length(&self) -> DataLength {
         let dlc = self.dlc().bits();
-        let len = match dlc {
-            0..=8 => dlc,
-            9 => 12,
-            10 => 16,
-            11 => 20,
-            12 => 24,
-            13 => 32,
-            14 => 48,
-            15 => 64,
-            _ => panic!("DLC > 15"),
-        };
         let ff = self.fdf().frame_format();
+        let mut len;
+        if ff == FrameFormat::Fdcan {
+            len = match dlc {
+                0..=8 => dlc,
+                9 => 12,
+                10 => 16,
+                11 => 20,
+                12 => 24,
+                13 => 32,
+                14 => 48,
+                15 => 64,
+                _ => panic!("DLC > 15"),
+            };
+        } else {
+            len = match dlc {
+                0..=8 => dlc,
+                9..=15 => 8,
+                _ => panic!("DLC > 15"),
+            }
+        }
         DataLength::new(len, ff)
     }
     pub fn to_filter_match(&self) -> FilterFrameMatch {
