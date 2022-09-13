@@ -3,7 +3,7 @@
 #![allow(unused)]
 
 use super::common::{BRS_R, DLC_R, ESI_R, FDF_R, ID_R, RTR_R, XTD_R};
-use super::enums::{DataLength, FilterFrameMatch};
+use super::enums::{DataLength, FilterFrameMatch, FrameFormat};
 use super::generic;
 
 #[doc = "Reader of register RxFifoElement"]
