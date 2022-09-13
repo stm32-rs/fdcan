@@ -90,6 +90,7 @@ impl R {
         let dlc = self.dlc().bits();
         let ff = self.fdf().frame_format();
         let len = if ff == FrameFormat::Fdcan {
+            // See RM0433 Rev 7 Table 475. DLC coding
             match dlc {
                 0..=8 => dlc,
                 9 => 12,

@@ -41,6 +41,7 @@ impl DataLength {
     pub(crate) fn dlc(&self) -> u8 {
         match self {
             DataLength::Standard(l) => *l,
+            // See RM0433 Rev 7 Table 475. DLC coding
             DataLength::Fdcan(l) => match l {
                 0..=8 => *l,
                 9..=12 => 9,
