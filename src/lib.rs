@@ -446,13 +446,20 @@ where
     /// Retrieve the current protocol status
     pub fn get_protocol_status(&self) -> ProtocolStatus {
         let psr = self.registers().psr.read();
+        let lec = if psr.redl().bit_is_set() && psr.rbrs().bit_is_set() {
+            // Last error from data phase of a FDCAN format frame with its BRS
+            // flag set
+            psr.dlec().bits()
+        } else {
+            psr.lec().bits()
+        };
         ProtocolStatus {
             activity: Activity::try_from(0 /*psr.act().bits()*/).unwrap(), //TODO: stm32g4 does not allow reading from this register
             transmitter_delay_comp: psr.tdcv().bits(),
             bus_off_status: psr.bo().bit_is_set(),
             error_warning: psr.ew().bit_is_set(),
             error_passive_state: psr.ep().bit_is_set(),
-            last_error: LastErrorCode::try_from(psr.lec().bits()).unwrap(),
+            last_error: LastErrorCode::try_from(lec).unwrap(),
         }
     }
 
