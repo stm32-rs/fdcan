@@ -17,7 +17,7 @@ macro_rules! declare_interrupts {
         /// FDCANx_INTR1,
         ///
         /// The interrupts available on each line can be configured using the
-        /// [`crate::config::FdCanConfig`] struct.
+        /// `[crate::config::FdCanConfig]` struct.
         #[derive(Debug, Copy, Clone, Eq, PartialEq)]
         #[non_exhaustive]
         pub enum Interrupt {

@@ -684,7 +684,7 @@ where
     }
 
     /// Applies the settings of a new FdCanConfig
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn apply_config(&mut self, config: FdCanConfig) {
         self.set_data_bit_timing(config.dbtr);
@@ -761,7 +761,7 @@ where
     }
 
     /// Configures the transmit pause feature
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_transmit_pause(&mut self, enabled: bool) {
         let can = self.registers();
@@ -770,7 +770,7 @@ where
     }
 
     /// Configures non-iso mode
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_non_iso_mode(&mut self, enabled: bool) {
         let can = self.registers();
@@ -779,7 +779,7 @@ where
     }
 
     /// Configures edge filtering
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_edge_filtering(&mut self, enabled: bool) {
         let can = self.registers();
@@ -788,7 +788,7 @@ where
     }
 
     /// Configures frame transmission mode
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_frame_transmit(&mut self, fts: FrameTransmissionConfig) {
         let (fdoe, brse) = match fts {
@@ -804,7 +804,7 @@ where
     }
 
     /// Configures the interrupt lines
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_interrupt_line_config(&mut self, l0int: Interrupts) {
         let can = self.registers();
