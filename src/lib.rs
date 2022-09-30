@@ -96,14 +96,14 @@ pub enum ReceiveErrorOverflow {
 
 ///Error Counters
 #[derive(Clone, Copy, Debug)]
-#[allow(dead_code)]
+#[non_exhaustive]
 pub struct ErrorCounters {
     /// General CAN error counter
-    can_errors: u8,
+    pub can_errors: u8,
     /// Receive CAN error counter
-    receive_err: ReceiveErrorOverflow,
+    pub receive_err: ReceiveErrorOverflow,
     /// Transmit CAN error counter
-    transmit_err: u8,
+    pub transmit_err: u8,
 }
 
 /// Loopback Mode
@@ -178,19 +178,20 @@ impl TryFrom<u8> for LastErrorCode {
 
 /// Some status indications regarding the FDCAN protocl
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub struct ProtocolStatus {
     /// Type of current activity
-    activity: Activity,
+    pub activity: Activity,
     /// Transmitter delay companstation
-    transmitter_delay_comp: u8,
+    pub transmitter_delay_comp: u8,
     /// But Off Status
-    bus_off_status: bool,
+    pub bus_off_status: bool,
     /// Shows if Error counters are aat their limit of 96
-    error_warning: bool,
+    pub error_warning: bool,
     /// Shows if the node send and active error flag (false) or stays silent (true).
-    error_passive_state: bool,
+    pub error_passive_state: bool,
     /// Indicates te last type of error which occurred on the CAN bus.
-    last_error: LastErrorCode,
+    pub last_error: LastErrorCode,
 }
 
 /// Allows for Transmit Operations
