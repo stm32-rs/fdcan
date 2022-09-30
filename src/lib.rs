@@ -447,13 +447,20 @@ where
     /// Retrieve the current protocol status
     pub fn get_protocol_status(&self) -> ProtocolStatus {
         let psr = self.registers().psr.read();
+        let lec = if psr.redl().bit_is_set() && psr.rbrs().bit_is_set() {
+            // Last error from data phase of a FDCAN format frame with its BRS
+            // flag set
+            psr.dlec().bits()
+        } else {
+            psr.lec().bits()
+        };
         ProtocolStatus {
             activity: Activity::try_from(0 /*psr.act().bits()*/).unwrap(), //TODO: stm32g4 does not allow reading from this register
             transmitter_delay_comp: psr.tdcv().bits(),
             bus_off_status: psr.bo().bit_is_set(),
             error_warning: psr.ew().bit_is_set(),
             error_passive_state: psr.ep().bit_is_set(),
-            last_error: LastErrorCode::try_from(psr.lec().bits()).unwrap(),
+            last_error: LastErrorCode::try_from(lec).unwrap(),
         }
     }
 
@@ -678,7 +685,7 @@ where
     }
 
     /// Applies the settings of a new FdCanConfig
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn apply_config(&mut self, config: FdCanConfig) {
         self.set_data_bit_timing(config.dbtr);
@@ -755,7 +762,7 @@ where
     }
 
     /// Configures the transmit pause feature
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_transmit_pause(&mut self, enabled: bool) {
         let can = self.registers();
@@ -764,7 +771,7 @@ where
     }
 
     /// Configures non-iso mode
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_non_iso_mode(&mut self, enabled: bool) {
         let can = self.registers();
@@ -773,7 +780,7 @@ where
     }
 
     /// Configures edge filtering
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_edge_filtering(&mut self, enabled: bool) {
         let can = self.registers();
@@ -782,7 +789,7 @@ where
     }
 
     /// Configures frame transmission mode
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_frame_transmit(&mut self, fts: FrameTransmissionConfig) {
         let (fdoe, brse) = match fts {
@@ -798,7 +805,7 @@ where
     }
 
     /// Configures the interrupt lines
-    /// See `[FdCanConfig]` for more information
+    /// See [`FdCanConfig`] for more information
     #[inline]
     pub fn set_interrupt_line_config(&mut self, l0int: Interrupts) {
         let can = self.registers();

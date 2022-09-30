@@ -47,11 +47,13 @@ impl NominalBitTiming {
 impl Default for NominalBitTiming {
     #[inline]
     fn default() -> Self {
+        // Kernel Clock 8MHz, Bit rate: 500kbit/s. Corresponds to a NBTP
+        // register value of 0x0600_0A03
         Self {
             prescaler: NonZeroU16::new(1).unwrap(),
-            seg1: NonZeroU8::new(0xA).unwrap(),
-            seg2: NonZeroU8::new(0x3).unwrap(),
-            sync_jump_width: NonZeroU8::new(0x3).unwrap(),
+            seg1: NonZeroU8::new(11).unwrap(),
+            seg2: NonZeroU8::new(4).unwrap(),
+            sync_jump_width: NonZeroU8::new(4).unwrap(),
         }
     }
 }
@@ -101,12 +103,14 @@ impl DataBitTiming {
 impl Default for DataBitTiming {
     #[inline]
     fn default() -> Self {
+        // Kernel Clock 8MHz, Bit rate: 500kbit/s. Corresponds to a DBTP
+        // register value of 0x0000_0A33
         Self {
             transceiver_delay_compensation: false,
             prescaler: NonZeroU8::new(1).unwrap(),
-            seg1: NonZeroU8::new(0xA).unwrap(),
-            seg2: NonZeroU8::new(0x3).unwrap(),
-            sync_jump_width: NonZeroU8::new(0x3).unwrap(),
+            seg1: NonZeroU8::new(11).unwrap(),
+            seg2: NonZeroU8::new(4).unwrap(),
+            sync_jump_width: NonZeroU8::new(4).unwrap(),
         }
     }
 }
