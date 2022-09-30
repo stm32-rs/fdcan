@@ -96,7 +96,7 @@ pub enum ReceiveErrorOverflow {
 
 ///Error Counters
 #[derive(Clone, Copy, Debug)]
-#[allow(dead_code)]
+#[non_exhaustive]
 pub struct ErrorCounters {
     /// General CAN error counter
     pub can_errors: u8,
@@ -178,6 +178,7 @@ impl TryFrom<u8> for LastErrorCode {
 
 /// Some status indications regarding the FDCAN protocl
 #[derive(Clone, Copy, Debug)]
+#[non_exhaustive]
 pub struct ProtocolStatus {
     /// Type of current activity
     pub activity: Activity,
