@@ -804,12 +804,27 @@ where
     /// Configures the interrupt lines. See
     /// [`FdCanConfig::set_interrupt_line_config`]
     #[inline]
+    #[deprecated(
+        since = "0.1.3",
+        note = "Deprecated in favour of .select_interrupt_line_1(..)"
+    )]
     pub fn set_interrupt_line_config(&mut self, l0int: Interrupts) {
         let can = self.registers();
 
         can.ils.modify(|_, w| unsafe { w.bits(l0int.bits()) });
 
         self.control.config.interrupt_line_config = l0int;
+    }
+
+    /// Selects Interrupt Line 1 for the given interrupts. Interrupt Line 0 is
+    /// selected for all other interrupts. See
+    /// [`FdCanConfig::select_interrupt_line_1`]
+    pub fn select_interrupt_line_1(&mut self, l1int: Interrupts) {
+        let can = self.registers();
+
+        can.ils.modify(|_, w| unsafe { w.bits(l1int.bits()) });
+
+        self.control.config.interrupt_line_config = l1int;
     }
 
     /// Sets the protocol exception handling on/off
