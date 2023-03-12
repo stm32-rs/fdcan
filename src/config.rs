@@ -407,8 +407,20 @@ impl FdCanConfig {
 
     /// Configures which interrupt go to which interrupt lines
     #[inline]
+    #[deprecated(
+        since = "0.1.3",
+        note = "Deprecated in favour of .select_interrupt_line_1(..)"
+    )]
     pub const fn set_interrupt_line_config(mut self, l0int: Interrupts) -> Self {
         self.interrupt_line_config = l0int;
+        self
+    }
+
+    /// Selects Interrupt Line 1 for the given interrupts. Interrupt Line 0 is
+    /// selected for all other interrupts
+    #[inline]
+    pub const fn select_interrupt_line_1(mut self, l1int: Interrupts) -> Self {
+        self.interrupt_line_config = l1int;
         self
     }
 

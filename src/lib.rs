@@ -684,8 +684,7 @@ where
         self.into_can_mode()
     }
 
-    /// Applies the settings of a new FdCanConfig
-    /// See [`FdCanConfig`] for more information
+    /// Applies the settings of a new FdCanConfig See [`FdCanConfig`]
     #[inline]
     pub fn apply_config(&mut self, config: FdCanConfig) {
         self.set_data_bit_timing(config.dbtr);
@@ -761,8 +760,8 @@ where
         self.control.config.automatic_retransmit = enabled;
     }
 
-    /// Configures the transmit pause feature
-    /// See [`FdCanConfig`] for more information
+    /// Configures the transmit pause feature. See
+    /// [`FdCanConfig::set_transmit_pause`]
     #[inline]
     pub fn set_transmit_pause(&mut self, enabled: bool) {
         let can = self.registers();
@@ -770,8 +769,7 @@ where
         self.control.config.transmit_pause = enabled;
     }
 
-    /// Configures non-iso mode
-    /// See [`FdCanConfig`] for more information
+    /// Configures non-iso mode. See [`FdCanConfig::set_non_iso_mode`]
     #[inline]
     pub fn set_non_iso_mode(&mut self, enabled: bool) {
         let can = self.registers();
@@ -779,8 +777,7 @@ where
         self.control.config.non_iso_mode = enabled;
     }
 
-    /// Configures edge filtering
-    /// See [`FdCanConfig`] for more information
+    /// Configures edge filtering. See [`FdCanConfig::set_edge_filtering`]
     #[inline]
     pub fn set_edge_filtering(&mut self, enabled: bool) {
         let can = self.registers();
@@ -788,8 +785,8 @@ where
         self.control.config.edge_filtering = enabled;
     }
 
-    /// Configures frame transmission mode
-    /// See [`FdCanConfig`] for more information
+    /// Configures frame transmission mode. See
+    /// [`FdCanConfig::set_frame_transmit`]
     #[inline]
     pub fn set_frame_transmit(&mut self, fts: FrameTransmissionConfig) {
         let (fdoe, brse) = match fts {
@@ -804,15 +801,30 @@ where
         self.control.config.frame_transmit = fts;
     }
 
-    /// Configures the interrupt lines
-    /// See [`FdCanConfig`] for more information
+    /// Configures the interrupt lines. See
+    /// [`FdCanConfig::set_interrupt_line_config`]
     #[inline]
+    #[deprecated(
+        since = "0.1.3",
+        note = "Deprecated in favour of .select_interrupt_line_1(..)"
+    )]
     pub fn set_interrupt_line_config(&mut self, l0int: Interrupts) {
         let can = self.registers();
 
         can.ils.modify(|_, w| unsafe { w.bits(l0int.bits()) });
 
         self.control.config.interrupt_line_config = l0int;
+    }
+
+    /// Selects Interrupt Line 1 for the given interrupts. Interrupt Line 0 is
+    /// selected for all other interrupts. See
+    /// [`FdCanConfig::select_interrupt_line_1`]
+    pub fn select_interrupt_line_1(&mut self, l1int: Interrupts) {
+        let can = self.registers();
+
+        can.ils.modify(|_, w| unsafe { w.bits(l1int.bits()) });
+
+        self.control.config.interrupt_line_config = l1int;
     }
 
     /// Sets the protocol exception handling on/off
@@ -1225,7 +1237,7 @@ where
     ///
     /// If all transmit mailboxes are full, a higher priority frame can replace a lower-priority
     /// frame, which is returned via the closure 'pending'. If 'pending' is called; it's return value
-    /// is returned via Option<P>, if it is not, None is returned.
+    /// is returned via `Option<P>`, if it is not, None is returned.
     /// If there are only higher priority frames in the queue, this returns Err::WouldBlock
     pub fn transmit(
         &mut self,
