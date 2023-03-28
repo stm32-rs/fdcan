@@ -1330,11 +1330,11 @@ where
         tx_element.reset();
         tx_element.header.merge(tx_header);
 
-        let lbuffer = [0_u32; 16];
+        let mut lbuffer = [0_u32; 16];
 
-        let data = unsafe {
+        let mut data = unsafe {
             slice::from_raw_parts_mut(
-                lbuffer.as_ptr() as *mut u8,
+                lbuffer.as_mut_ptr() as *mut u8,
                 tx_header.len as usize,
             )
         };
