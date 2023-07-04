@@ -1331,8 +1331,7 @@ where
         tx_element.header.merge(tx_header);
 
         let mut lbuffer = [0_u32; 16];
-
-        let mut data = unsafe {
+        let data = unsafe {
             slice::from_raw_parts_mut(
                 lbuffer.as_mut_ptr() as *mut u8,
                 tx_header.len as usize,
@@ -1340,10 +1339,12 @@ where
         };
         data[..tx_header.len as usize]
             .copy_from_slice(&buffer[..tx_header.len as usize]);
-
         let data_len = ((tx_header.len as usize) + 3) / 4;
-
-        tx_element.data[..data_len].copy_from_slice(&lbuffer[..data_len]);
+        for (register, byte) in
+            tx_element.data.iter_mut().zip(lbuffer[..data_len].iter())
+        {
+            unsafe { register.write(*byte) };
+        }
 
         // Set <idx as Mailbox> as ready to transmit
         self.registers()
@@ -1361,7 +1362,13 @@ where
 
             //read back header section
             let header = (&tx_ram.tbsa[idx as usize].header).into();
-            Some(pending(idx, header, &tx_ram.tbsa[idx as usize].data))
+            let mut data = [0u32; 16];
+            for (byte, register) in
+                data.iter_mut().zip(tx_ram.tbsa[idx as usize].data.iter())
+            {
+                *byte = register.read();
+            }
+            Some(pending(idx, header, &data))
         } else {
             // Abort request failed because the frame was already sent (or being sent) on
             // the bus. All mailboxes are now free. This can happen for small prescaler
@@ -1525,13 +1532,19 @@ where
             let mailbox: &RxFifoElement = &self.rx_msg_ram().fxsa[idx];
 
             let header: RxFrameInfo = (&mailbox.header).into();
-            let data = unsafe {
-                slice::from_raw_parts(
-                    mailbox.data.as_ptr() as *const u8,
-                    header.len as usize,
-                )
-            };
-            buffer[..header.len as usize].copy_from_slice(data);
+            for (i, register) in mailbox.data.iter().enumerate() {
+                let register_value = register.read();
+                let register_bytes = unsafe {
+                    slice::from_raw_parts(&register_value as *const u32 as *const u8, 4)
+                };
+                let num_bytes = (header.len as usize) - i * 4;
+                if num_bytes <= 4 {
+                    buffer[i * 4..i * 4 + num_bytes]
+                        .copy_from_slice(&register_bytes[..num_bytes]);
+                    break;
+                }
+                buffer[i * 4..(i + 1) * 4].copy_from_slice(register_bytes);
+            }
             self.release_mailbox(mbox);
 
             if self.has_overrun() {

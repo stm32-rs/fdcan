@@ -1,3 +1,5 @@
+use volatile_register::RW;
+
 pub(crate) mod common;
 pub(crate) mod enums;
 pub(crate) mod generic;
@@ -100,12 +102,14 @@ pub(crate) mod rxfifo_element;
 #[repr(C)]
 pub(crate) struct RxFifoElement {
     pub(crate) header: RxFifoElementHeader,
-    pub(crate) data: [u32; 16], // TODO: Does this need to be volatile?
+    pub(crate) data: [RW<u32>; 16],
 }
 impl RxFifoElement {
     pub(crate) fn reset(&mut self) {
         self.header.reset();
-        self.data = [0; 16];
+        for byte in self.data.iter_mut() {
+            unsafe { byte.write(0) };
+        }
     }
 }
 pub(crate) type RxFifoElementHeaderType = [u32; 2];
@@ -119,12 +123,14 @@ pub(crate) mod txbuffer_element;
 #[repr(C)]
 pub(crate) struct TxBufferElement {
     pub(crate) header: TxBufferElementHeader,
-    pub(crate) data: [u32; 16], // TODO: Does this need to be volatile?
+    pub(crate) data: [RW<u32>; 16],
 }
 impl TxBufferElement {
     pub(crate) fn reset(&mut self) {
         self.header.reset();
-        self.data = [0; 16];
+        for byte in self.data.iter_mut() {
+            unsafe { byte.write(0) };
+        }
     }
 }
 pub(crate) type TxBufferElementHeader =
