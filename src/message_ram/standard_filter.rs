@@ -30,7 +30,7 @@ impl<'a> SFID2_W<'a> {
     #[doc = r"Writes raw bits to the field"]
     #[inline(always)]
     pub unsafe fn bits(self, value: u16) -> &'a mut W {
-        self.w.bits = (self.w.bits & !(0x03ff)) | ((value as u32) & 0x03ff);
+        self.w.bits = (self.w.bits & !(0x07ff)) | ((value as u32) & 0x07ff);
         self.w
     }
 }
@@ -46,7 +46,7 @@ impl<'a> SFID1_W<'a> {
     #[inline(always)]
     pub unsafe fn bits(self, value: u16) -> &'a mut W {
         self.w.bits =
-            (self.w.bits & !(0x03ff << 16)) | (((value as u32) & 0x03ff) << 16);
+            (self.w.bits & !(0x07ff << 16)) | (((value as u32) & 0x07ff) << 16);
         self.w
     }
 }
@@ -93,12 +93,12 @@ impl R {
     #[doc = "Bits 0:10 - SFID2"]
     #[inline(always)]
     pub fn sfid2(&self) -> SFID2_R {
-        SFID2_R::new((self.bits & 0x03ff) as u16)
+        SFID2_R::new((self.bits & 0x07ff) as u16)
     }
     #[doc = "Bits 16:26 - SFID1"]
     #[inline(always)]
     pub fn sfid1(&self) -> SFID1_R {
-        SFID1_R::new(((self.bits >> 16) & 0x03ff) as u16)
+        SFID1_R::new(((self.bits >> 16) & 0x07ff) as u16)
     }
     #[doc = "Bits 27:29 - SFEC"]
     #[inline(always)]
