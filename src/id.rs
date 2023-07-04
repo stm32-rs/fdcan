@@ -139,7 +139,7 @@ impl From<Id> for IdType {
 
 /// Identifier of a CAN message.
 ///
-/// FdCan be either a standard identifier (11bit, Range: 0..0x3FF) or a
+/// FdCan be either a standard identifier (11bit, Range: 0..0x7FF) or a
 /// extendended identifier (29bit , Range: 0..0x1FFFFFFF).
 ///
 /// The `Ord` trait can be used to determine the frame’s priority this ID
