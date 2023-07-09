@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* bors bot replaced with GH merge queue
 * Rename method `set_interrupt_line_config` to `select_interrupt_line_1` [#27]
 
 ## [v0.1.2] 2022-09-13
