@@ -765,7 +765,7 @@ where
     #[inline]
     pub fn set_transmit_pause(&mut self, enabled: bool) {
         let can = self.registers();
-        can.cccr.modify(|_, w| w.dar().bit(!enabled));
+        can.cccr.modify(|_, w| w.txp().bit(enabled));
         self.control.config.transmit_pause = enabled;
     }
 
