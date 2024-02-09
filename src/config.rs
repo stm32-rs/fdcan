@@ -14,6 +14,7 @@ use core::num::{NonZeroU16, NonZeroU8};
 /// Then copy the `CAN_BUS_TIME` register value from the table and pass it as the `btr`
 /// parameter to this method.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct NominalBitTiming {
     /// Value by which the oscillator frequency is divided for generating the bit time quanta. The bit
     /// time is built up from a multiple of this quanta. Valid values are 1 to 512.
@@ -61,6 +62,7 @@ impl Default for NominalBitTiming {
 /// Configures the data bit timings for the FdCan Variable Bitrates.
 /// This is not used when frame_transmit is set to anything other than AllowFdCanAndBRS.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct DataBitTiming {
     /// Tranceiver Delay Compensation
     pub transceiver_delay_compensation: bool,
@@ -120,6 +122,7 @@ impl Default for DataBitTiming {
 /// or use Bit rate switching. But if this general setting does not allow
 /// that, only classic CAN is used instead.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum FrameTransmissionConfig {
     /// Only allow Classic CAN message Frames
     ClassicCanOnly,
@@ -131,6 +134,7 @@ pub enum FrameTransmissionConfig {
 
 ///
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum ClockDivider {
     /// Divide by 1
     _1 = 0b0000,
@@ -168,6 +172,7 @@ pub enum ClockDivider {
 
 /// Prescaler of the Timestamp counter
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum TimestampPrescaler {
     /// 1
     _1 = 1,
@@ -205,6 +210,7 @@ pub enum TimestampPrescaler {
 
 /// Selects the source of the Timestamp counter
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum TimestampSource {
     /// The Timestamp counter is disabled
     None,
@@ -217,6 +223,7 @@ pub enum TimestampSource {
 
 /// How to handle frames in the global filter
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum NonMatchingFilter {
     /// Frames will go to Fifo0 when they do no match any specific filter
     IntoRxFifo0 = 0b00,
@@ -228,6 +235,7 @@ pub enum NonMatchingFilter {
 
 /// How to handle frames which do not match a specific filter
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct GlobalFilter {
     /// How to handle non-matching standard frames
     pub handle_standard_frames: NonMatchingFilter,
@@ -293,6 +301,7 @@ impl Default for GlobalFilter {
 
 /// FdCan Config Struct
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct FdCanConfig {
     /// Nominal Bit Timings
     pub nbtr: NominalBitTiming,

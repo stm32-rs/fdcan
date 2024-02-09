@@ -106,6 +106,7 @@ impl ExtendedFilter {
 
 /// Filter Type
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum FilterType<ID, UNIT>
 where
     ID: Copy + Clone + core::fmt::Debug,
@@ -150,6 +151,7 @@ where
 
 /// Filter Action
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum Action {
     /// No Action
     Disable = 0b000,
@@ -182,6 +184,7 @@ impl From<Action> for crate::message_ram::enums::FilterElementConfig {
 
 /// Filter
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct Filter<ID, UNIT>
 where
     ID: Copy + Clone + core::fmt::Debug,
@@ -195,6 +198,7 @@ where
 
 /// Standard Filter Slot
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum StandardFilterSlot {
     /// 0
     _0 = 0,
@@ -291,6 +295,7 @@ impl From<u8> for StandardFilterSlot {
 
 /// Extended Filter Slot
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum ExtendedFilterSlot {
     /// 0
     _0 = 0,
@@ -327,6 +332,7 @@ impl From<u8> for ExtendedFilterSlot {
 
 /// Enum over both Standard and Extended Filter ID's
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum FilterId {
     /// Standard Filter Slots
     Standard(StandardFilterSlot),
