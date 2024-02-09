@@ -31,7 +31,7 @@ vcell = "0.1.3"
 nb = "1.0.0"
 static_assertions = "1.1"
 volatile-register = "0.2.1"
-defmt = "0.3.6"
+defmt = { version = "0.3.6", optional = true }
 
 [dependencies.embedded-can-03]
 version = "0.3"
