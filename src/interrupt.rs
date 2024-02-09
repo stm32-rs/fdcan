@@ -20,6 +20,7 @@ macro_rules! declare_interrupts {
         /// `[crate::config::FdCanConfig]` struct.
         #[derive(Debug, Copy, Clone, Eq, PartialEq)]
         #[non_exhaustive]
+        #[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
         pub enum Interrupt {
             $(
                 #[doc = $doc]
@@ -30,6 +31,7 @@ macro_rules! declare_interrupts {
         paste::paste! {
             bitflags::bitflags! {
                 /// A set of FdCAN interrupts.
+                #[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
                 pub struct Interrupts: u32 {
                     $(
                         #[doc = $doc]
@@ -195,6 +197,7 @@ impl ops::BitOrAssign<Interrupt> for Interrupts {
 /// The events linked to these can be configured
 /// see `[config::FdCanConfig]`
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum InterruptLine {
     /// Interrupt Line 0
     _0 = 0,

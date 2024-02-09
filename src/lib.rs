@@ -87,6 +87,7 @@ pub unsafe trait Instance: message_ram::Instance {
 
 /// Indicates if an Receive Overflow has occurred
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum ReceiveErrorOverflow {
     /// No overflow has occurred
     Normal(u8),
@@ -97,6 +98,7 @@ pub enum ReceiveErrorOverflow {
 ///Error Counters
 #[derive(Clone, Copy, Debug)]
 #[non_exhaustive]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct ErrorCounters {
     /// General CAN error counter
     pub can_errors: u8,
@@ -116,6 +118,7 @@ enum LoopbackMode {
 
 /// Bus Activity
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum Activity {
     /// Node is Synchronizing
     Synchronizing = 0b00,
@@ -141,6 +144,7 @@ impl TryFrom<u8> for Activity {
 
 /// Indicates the type of the last error which occurred on the CAN bus
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum LastErrorCode {
     /// There has been no error since last read
     NoError = 0b000,
@@ -179,6 +183,7 @@ impl TryFrom<u8> for LastErrorCode {
 /// Some status indications regarding the FDCAN protocl
 #[derive(Clone, Copy, Debug)]
 #[non_exhaustive]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct ProtocolStatus {
     /// Type of current activity
     pub activity: Activity,
@@ -200,13 +205,16 @@ pub trait Transmit {}
 pub trait Receive {}
 
 /// Allows for the FdCan Instance to be released or to enter ConfigMode
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct PoweredDownMode;
 /// Allows for the configuration for the Instance
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct ConfigMode;
 /// This mode can be used for a “Hot Selftest”, meaning the FDCAN can be tested without
 /// affecting a running CAN system connected to the FDCAN_TX and FDCAN_RX pins. In this
 /// mode, FDCAN_RX pin is disconnected from the FDCAN and FDCAN_TX pin is held
 /// recessive.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct InternalLoopbackMode;
 impl Transmit for InternalLoopbackMode {}
 impl Receive for InternalLoopbackMode {}
@@ -216,10 +224,12 @@ impl Receive for InternalLoopbackMode {}
 /// feedback from its transmit output to its receive input. The actual value of the FDCAN_RX
 /// input pin is disregarded by the FDCAN. The transmitted messages can be monitored at the
 /// FDCAN_TX transmit pin.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct ExternalLoopbackMode;
 impl Transmit for ExternalLoopbackMode {}
 impl Receive for ExternalLoopbackMode {}
 /// The normal use of the FdCan instance after configurations
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct NormalOperationMode;
 impl Transmit for NormalOperationMode {}
 impl Receive for NormalOperationMode {}
@@ -229,6 +239,7 @@ impl Receive for NormalOperationMode {}
 /// send dominant bits, instead it waits for the occurrence of bus idle condition to resynchronize
 /// itself to the CAN communication. The error counters for transmit and receive are frozen while
 /// error logging (can_errors) is active. TODO: automatically enter in this mode?
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct RestrictedOperationMode;
 impl Receive for RestrictedOperationMode {}
 ///  In Bus monitoring mode (for more details refer to ISO11898-1, 10.12 Bus monitoring),
@@ -239,14 +250,17 @@ impl Receive for RestrictedOperationMode {}
 /// state. In Bus monitoring mode the TXBRP register is held in reset state. The Bus monitoring
 /// mode can be used to analyze the traffic on a CAN bus without affecting it by the transmission
 /// of dominant bits.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct BusMonitoringMode;
 impl Receive for BusMonitoringMode {}
 /// Test mode must be used for production tests or self test only. The software control for
 /// FDCAN_TX pin interferes with all CAN protocol functions. It is not recommended to use test
 /// modes for application.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct TestMode;
 
 /// Interface to a FdCAN peripheral.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct FdCan<I: Instance, MODE> {
     control: FdCanControl<I, MODE>,
 }
@@ -1120,6 +1134,7 @@ where
 /// FdCanControl Struct
 /// Used to house some information during an FdCan split.
 /// and can be used for some generic information retrieval during operation.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct FdCanControl<I, MODE>
 where
     I: Instance,
@@ -1185,6 +1200,7 @@ where
 }
 
 /// Interface to the CAN transmitter part.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct Tx<I, MODE> {
     _can: PhantomData<I>,
     _mode: PhantomData<MODE>,
@@ -1460,6 +1476,7 @@ impl FifoNr for Fifo1 {
 /// Notes whether an overrun has occurred.
 /// Since both arms contain T, this can be 'unwrap'ed without causing a panic.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum ReceiveOverrun<T> {
     /// No overrun has occured
     NoOverrun(T),
@@ -1479,6 +1496,7 @@ impl<T> ReceiveOverrun<T> {
 }
 
 /// Interface to the CAN receiver part.
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct Rx<I, MODE, FIFONR>
 where
     FIFONR: FifoNr,
@@ -1618,6 +1636,7 @@ where
 /// These are used for the transmit queue
 /// and the two Receive FIFOs
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum Mailbox {
     /// Transmit mailbox 0
     _0 = 0,
