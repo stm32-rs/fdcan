@@ -6,6 +6,7 @@ use crate::message_ram::enums::{IdType, RemoteTransmissionRequest};
 
 /// Standard 11-bit CAN Identifier (`0..=0x7FF`).
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct StandardId(u16);
 
 impl StandardId {
@@ -52,6 +53,7 @@ impl From<StandardId> for IdType {
 
 /// Extended 29-bit CAN Identifier (`0..=1FFF_FFFF`).
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct ExtendedId(u32);
 
 impl ExtendedId {
@@ -105,6 +107,7 @@ impl From<ExtendedId> for IdType {
 
 /// A CAN Identifier (standard or extended).
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum Id {
     /// Standard 11-bit Identifier (`0..=0x7FF`).
     Standard(StandardId),
@@ -148,6 +151,7 @@ impl From<Id> for IdType {
 /// have a higher priority than extended frames and data frames have a higher
 /// priority than remote frames.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub(crate) struct IdReg(u32);
 
 impl IdReg {
