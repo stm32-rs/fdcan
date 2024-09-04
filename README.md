@@ -19,7 +19,7 @@ fdcan = "0.2.1"
 
 # Minimum supported Rust version
 
-The Minimum Supported Rust Version (MSRV) at the moment is **1.52.0**. Older
+The Minimum Supported Rust Version (MSRV) at the moment is **1.60.0**. Older
 versions **may** compile, especially when some features are not used
 in your application.
 
