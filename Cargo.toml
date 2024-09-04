@@ -1,6 +1,6 @@
 [package]
 name = "fdcan"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
         "Richard Meadows <richard@richard.fish>",
         "Cor Peters <c.peters@eekels.com>"

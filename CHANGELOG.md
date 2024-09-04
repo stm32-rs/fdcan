@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [v0.2.1] 2024-09-04
+
+* Bugfix: Fix transmit pause configuration [#41]
+* Update depreciated method `set_interrupt_line_config` to `select_interrupt_line_1` [#46]
+
 ## [v0.2.0] 2023-07-09
 
 * **Breaking:** Rename method `set_interrupt_line_config` to `select_interrupt_line_1` [#27]
@@ -26,7 +31,8 @@ Initial release.
 
 Callbacks replaced with parameter buffer #10
 
-[Unreleased]: https://github.com/stm32-rs/fdcan/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/stm32-rs/fdcan/compare/v0.2.1...HEAD
+[v0.2.1]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.2...v0.2.0
 [v0.1.2]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.0...v0.1.1
@@ -39,3 +45,5 @@ Callbacks replaced with parameter buffer #10
 [#32]: https://github.com/stm32-rs/stm32h7xx-hal/pull/32
 [#34]: https://github.com/stm32-rs/stm32h7xx-hal/pull/34
 [#36]: https://github.com/stm32-rs/stm32h7xx-hal/pull/36
+[#41]: https://github.com/stm32-rs/stm32h7xx-hal/pull/41
+[#46]: https://github.com/stm32-rs/stm32h7xx-hal/pull/46
