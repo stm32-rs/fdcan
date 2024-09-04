@@ -692,7 +692,7 @@ where
         self.set_automatic_retransmit(config.automatic_retransmit);
         self.set_transmit_pause(config.transmit_pause);
         self.set_frame_transmit(config.frame_transmit);
-        self.set_interrupt_line_config(config.interrupt_line_config);
+        self.select_interrupt_line_1(config.interrupt_line_config);
         self.set_non_iso_mode(config.non_iso_mode);
         self.set_edge_filtering(config.edge_filtering);
         self.set_protocol_exception_handling(config.protocol_exception_handling);
