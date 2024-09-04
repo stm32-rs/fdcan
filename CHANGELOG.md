@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+* Update MSRV to 1.60
+
 ## [v0.2.1] 2024-09-04
 
 * Bugfix: Fix transmit pause configuration [#41]
