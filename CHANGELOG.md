@@ -34,18 +34,18 @@ Initial release.
 Callbacks replaced with parameter buffer #10
 
 [Unreleased]: https://github.com/stm32-rs/fdcan/compare/v0.2.1...HEAD
-[v0.2.1]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.2.0...v0.2.1
-[v0.2.0]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.2...v0.2.0
-[v0.1.2]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.1...v0.1.2
-[v0.1.1]: https://github.com/stm32-rs/stm32h7xx-hal/compare/v0.1.0...v0.1.1
+[v0.2.1]: https://github.com/stm32-rs/fdcan/compare/v0.2.0...v0.2.1
+[v0.2.0]: https://github.com/stm32-rs/fdcan/compare/v0.1.2...v0.2.0
+[v0.1.2]: https://github.com/stm32-rs/fdcan/compare/v0.1.1...v0.1.2
+[v0.1.1]: https://github.com/stm32-rs/fdcan/compare/v0.1.0...v0.1.1
 
-[#18]: https://github.com/stm32-rs/stm32h7xx-hal/pull/18
-[#21]: https://github.com/stm32-rs/stm32h7xx-hal/pull/21
-[#23]: https://github.com/stm32-rs/stm32h7xx-hal/pull/23
-[#25]: https://github.com/stm32-rs/stm32h7xx-hal/pull/25
-[#27]: https://github.com/stm32-rs/stm32h7xx-hal/pull/27
-[#32]: https://github.com/stm32-rs/stm32h7xx-hal/pull/32
-[#34]: https://github.com/stm32-rs/stm32h7xx-hal/pull/34
-[#36]: https://github.com/stm32-rs/stm32h7xx-hal/pull/36
-[#41]: https://github.com/stm32-rs/stm32h7xx-hal/pull/41
-[#46]: https://github.com/stm32-rs/stm32h7xx-hal/pull/46
+[#18]: https://github.com/stm32-rs/fdcan/pull/18
+[#21]: https://github.com/stm32-rs/fdcan/pull/21
+[#23]: https://github.com/stm32-rs/fdcan/pull/23
+[#25]: https://github.com/stm32-rs/fdcan/pull/25
+[#27]: https://github.com/stm32-rs/fdcan/pull/27
+[#32]: https://github.com/stm32-rs/fdcan/pull/32
+[#34]: https://github.com/stm32-rs/fdcan/pull/34
+[#36]: https://github.com/stm32-rs/fdcan/pull/36
+[#41]: https://github.com/stm32-rs/fdcan/pull/41
+[#46]: https://github.com/stm32-rs/fdcan/pull/46
