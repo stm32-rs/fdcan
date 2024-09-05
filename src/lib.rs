@@ -1386,7 +1386,7 @@ where
     /// If there is a frame in the provided mailbox, and it is canceled successfully, this function
     /// returns `true`.
     #[inline]
-    fn abort(&mut self, idx: Mailbox) -> bool {
+    pub fn abort(&mut self, idx: Mailbox) -> bool {
         let can = self.registers();
 
         // Check if there is a request pending to abort
