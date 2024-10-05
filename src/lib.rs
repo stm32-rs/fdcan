@@ -14,7 +14,7 @@
 //!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types. |
+//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types, and compatible transmit functions. |
 //!
 //! [`embedded-can`]: https://docs.rs/embedded-can
 
@@ -1058,6 +1058,33 @@ where
         unsafe { Tx::<I, M>::conjure().transmit_preserve(frame, buffer, pending) }
     }
 
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_frame(
+        &mut self,
+        frame: &impl embedded_can::Frame
+    ) -> nb::Result<Option<()>, Infallible> {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Tx::<I, M>::conjure().transmit_frame(frame) }
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    ///
+    /// Implements the same `pending` behaviour as `transmit_preserve`.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_preserve_frame<F, PTX, P>(
+        &mut self,
+        frame: &F,
+        pending: &mut PTX,
+    ) -> nb::Result<Option<P>, Infallible>
+    where
+        F: embedded_can::Frame,
+        PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Tx::<I, M>::conjure().transmit_preserve_frame(frame, pending) }
+    }
+
     /// Returns `true` if no frame is pending for transmission.
     #[inline]
     pub fn is_transmitter_idle(&self) -> bool {
@@ -1294,6 +1321,31 @@ where
         self.write_mailbox(idx, frame, buffer);
 
         Ok(pending_frame)
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_frame(
+        &mut self,
+        frame: &impl embedded_can::Frame
+    ) -> nb::Result<Option<()>, Infallible> {
+        self.transmit(frame.into(), frame.data())
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    ///
+    /// Implements the same `pending` behaviour as `transmit_preserve`.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_preserve_frame<F, PTX, P>(
+        &mut self,
+        frame: &F,
+        pending: &mut PTX,
+    ) -> nb::Result<Option<P>, Infallible>
+    where
+        F: embedded_can::Frame,
+        PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
+    {
+        self.transmit_preserve(frame.into(), frame.data(), pending)
     }
 
     /// Returns if the tx queue is able to accept new messages without having to cancel an existing one
