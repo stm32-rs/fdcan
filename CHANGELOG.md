@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 * Update MSRV to 1.60
+* Add `embedded-can-04` feature flag which enables conversions from and into `embedded_can::Id` types.
 
 ## [v0.2.1] 2024-09-04
 

@@ -44,9 +44,34 @@ impl StandardId {
         self.0
     }
 }
+
 impl From<StandardId> for IdType {
     fn from(_id: StandardId) -> Self {
         IdType::StandardId
+    }
+}
+
+#[cfg(feature = "embedded-can-04")]
+impl From<embedded_can::StandardId> for StandardId
+{
+    #[inline]
+    fn from(value: embedded_can::StandardId) -> Self {
+        // unsafe: embedded_can range check is the same as here
+        unsafe {
+            Self::new_unchecked(value.as_raw())
+        }
+    }
+}
+
+#[cfg(feature = "embedded-can-04")]
+impl Into<embedded_can::StandardId> for StandardId
+{
+    #[inline]
+    fn into(self) -> embedded_can::StandardId {
+        // unsafe: embedded_can range check is the same as here
+        unsafe {
+            embedded_can::StandardId::new_unchecked(self.as_raw())
+        }
     }
 }
 
@@ -103,6 +128,30 @@ impl From<ExtendedId> for IdType {
     }
 }
 
+#[cfg(feature = "embedded-can-04")]
+impl From<embedded_can::ExtendedId> for ExtendedId
+{
+    #[inline]
+    fn from(value: embedded_can::ExtendedId) -> Self {
+        // Safety: embedded_can range check is the same as here
+        unsafe {
+            Self::new_unchecked(value.as_raw())
+        }
+    }
+}
+
+#[cfg(feature = "embedded-can-04")]
+impl Into<embedded_can::ExtendedId> for ExtendedId
+{
+    #[inline]
+    fn into(self) -> embedded_can::ExtendedId {
+        // Safety: embedded_can range check is the same as here
+        unsafe {
+            embedded_can::ExtendedId::new_unchecked(self.as_raw())
+        }
+    }
+}
+
 /// A CAN Identifier (standard or extended).
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Id {
@@ -124,6 +173,30 @@ impl From<ExtendedId> for Id {
     #[inline]
     fn from(id: ExtendedId) -> Self {
         Id::Extended(id)
+    }
+}
+
+#[cfg(feature = "embedded-can-04")]
+impl From<embedded_can::Id> for Id
+{
+    #[inline]
+    fn from(value: embedded_can::Id) -> Self {
+        match value {
+            embedded_can::Id::Standard(id) => Id::Standard(id.into()),
+            embedded_can::Id::Extended(id) => Id::Extended(id.into()),
+        }
+    }
+}
+
+#[cfg(feature = "embedded-can-04")]
+impl Into<embedded_can::Id> for Id
+{
+    #[inline]
+    fn into(self) -> embedded_can::Id {
+        match self {
+            Id::Standard(id) => embedded_can::Id::Standard(id.into()),
+            Id::Extended(id) => embedded_can::Id::Extended(id.into()),
+        }
     }
 }
 

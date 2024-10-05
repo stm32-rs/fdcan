@@ -14,7 +14,7 @@
 //!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | `embedded-can-03` | ~Implements the [`embedded-can`] 0.3 traits.~ |
+//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types. |
 //!
 //! [`embedded-can`]: https://docs.rs/embedded-can
 
@@ -28,8 +28,6 @@ pub use crate::pac::fdcan::RegisterBlock;
 
 /// Configuration of an FDCAN instance
 pub mod config;
-// #[cfg(feature = "embedded-can-03")] REVERT ME: embedded-can support
-// mod embedded_can;
 /// Filtering of CAN Messages
 pub mod filter;
 /// Header and info of transmitted and receiving frames
