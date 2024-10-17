@@ -95,6 +95,23 @@ impl From<TxFrameHeader> for IdReg {
     }
 }
 
+#[cfg(feature = "embedded-can-04")]
+impl<P> From<&P> for TxFrameHeader
+where
+P: embedded_can::Frame,
+{
+    fn from(value: &P) -> Self {
+        TxFrameHeader {
+            len: value.dlc() as u8,
+            id: value.id().into(),
+            // Note: embedded_can::Frame is only CAN 2.0 thus far
+            frame_format: FrameFormat::Standard,
+            bit_rate_switching: false,
+            marker: None,
+        }
+    }
+}
+
 pub(crate) trait MergeTxFrameHeader {
     fn merge(&self, header: TxFrameHeader);
 }

@@ -14,7 +14,7 @@
 //!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | `embedded-can-03` | ~Implements the [`embedded-can`] 0.3 traits.~ |
+//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types, and compatible receive transmit functions. Note that only classic CAN is currently supported in `embedded_can`. |
 //!
 //! [`embedded-can`]: https://docs.rs/embedded-can
 
@@ -28,8 +28,6 @@ pub use crate::pac::fdcan::RegisterBlock;
 
 /// Configuration of an FDCAN instance
 pub mod config;
-// #[cfg(feature = "embedded-can-03")] REVERT ME: embedded-can support
-// mod embedded_can;
 /// Filtering of CAN Messages
 pub mod filter;
 /// Header and info of transmitted and receiving frames
@@ -54,7 +52,7 @@ use filter::{
     StandardFilterSlot, EXTENDED_FILTER_MAX, STANDARD_FILTER_MAX,
 };
 use frame::MergeTxFrameHeader;
-use frame::{RxFrameInfo, TxFrameHeader};
+use frame::{FrameFormat, RxFrameInfo, TxFrameHeader};
 use id::{Id, IdReg};
 use interrupt::{Interrupt, InterruptLine, Interrupts};
 
@@ -1060,6 +1058,33 @@ where
         unsafe { Tx::<I, M>::conjure().transmit_preserve(frame, buffer, pending) }
     }
 
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_frame(
+        &mut self,
+        frame: &impl embedded_can::Frame
+    ) -> nb::Result<Option<()>, Infallible> {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Tx::<I, M>::conjure().transmit_frame(frame) }
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    ///
+    /// Implements the same `pending` behaviour as `transmit_preserve`.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_preserve_frame<F, PTX, P>(
+        &mut self,
+        frame: &F,
+        pending: &mut PTX,
+    ) -> nb::Result<Option<P>, Infallible>
+    where
+        F: embedded_can::Frame,
+        PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Tx::<I, M>::conjure().transmit_preserve_frame(frame, pending) }
+    }
+
     /// Returns `true` if no frame is pending for transmission.
     #[inline]
     pub fn is_transmitter_idle(&self) -> bool {
@@ -1114,6 +1139,36 @@ where
     ) -> nb::Result<ReceiveOverrun<RxFrameInfo>, Infallible> {
         // Safety: We have a `&mut self` and have unique access to the peripheral.
         unsafe { Rx::<I, M, Fifo1>::conjure().receive(buffer) }
+    }
+
+    /// Returns a received Classic CAN frame of a given type from FIFO_0 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    #[inline]
+    pub fn receive0_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Rx::<I, M, Fifo0>::conjure().receive_frame() }
+    }
+
+    /// Returns a received Classic CAN frame of a given type from FIFO_1 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    #[inline]
+    pub fn receive1_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Rx::<I, M, Fifo1>::conjure().receive_frame() }
     }
 }
 
@@ -1296,6 +1351,31 @@ where
         self.write_mailbox(idx, frame, buffer);
 
         Ok(pending_frame)
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_frame(
+        &mut self,
+        frame: &impl embedded_can::Frame
+    ) -> nb::Result<Option<()>, Infallible> {
+        self.transmit(frame.into(), frame.data())
+    }
+
+    /// Puts an embedded_can Frame in a free transmit mailbox for transmission on the bus.
+    ///
+    /// Implements the same `pending` behaviour as `transmit_preserve`.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn transmit_preserve_frame<F, PTX, P>(
+        &mut self,
+        frame: &F,
+        pending: &mut PTX,
+    ) -> nb::Result<Option<P>, Infallible>
+    where
+        F: embedded_can::Frame,
+        PTX: FnMut(Mailbox, TxFrameHeader, &[u32]) -> P,
+    {
+        self.transmit_preserve(frame.into(), frame.data(), pending)
     }
 
     /// Returns if the tx queue is able to accept new messages without having to cancel an existing one
@@ -1517,8 +1597,6 @@ where
 
     /// Returns a received frame if available.
     ///
-    /// Returns `Err` when a frame was lost due to buffer overrun.
-    ///
     /// # Panics
     ///
     /// Panics if `buffer` is smaller than the header length.
@@ -1554,6 +1632,33 @@ where
             }
         } else {
             Err(nb::Error::WouldBlock)
+        }
+    }
+
+    /// Returns a received Classic CAN frame of a given type if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn receive_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        let mut buffer = [0_u8; 8];
+        let overrun = self.receive(&mut buffer)?;
+        let info = overrun.unwrap();
+        if info.frame_format != FrameFormat::Standard {
+            panic!("Received CAN-FD frame");
+        }
+        let frame = if info.rtr {
+            F::new_remote(info.id, info.len as usize)
+        } else {
+            F::new(info.id, &buffer[..info.len as usize])
+        }.unwrap();
+        match overrun {
+            ReceiveOverrun::NoOverrun(_) => Ok(ReceiveOverrun::NoOverrun(frame)),
+            ReceiveOverrun::Overrun(_) => Ok(ReceiveOverrun::Overrun(frame)),
         }
     }
 

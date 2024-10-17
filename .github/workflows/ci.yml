@@ -30,6 +30,9 @@ jobs:
         device_feature:
           - fdcan_g0_g4_l5
           - fdcan_h7
+        embedded_can_feature:
+          - "embedded-can-04"
+          - ""
     steps:
     - uses: actions/checkout@v2
     - name: Cache cargo registry and index
@@ -54,12 +57,12 @@ jobs:
       with:
         use-cross: true
         command: build
-        args: --verbose --release --target ${{ env.TARGET }} --features ${{ matrix.device_feature }}
+        args: --verbose --release --target ${{ env.TARGET }} --features ${{ matrix.device_feature }},${{ matrix.embedded_can_feature}}
     - uses: actions-rs/cargo@v1
       with:
         use-cross: true
         command: test
-        args: --verbose --features ${{ matrix.device_feature }}
+        args: --verbose --features ${{ matrix.device_feature }},${{ matrix.embedded_can_feature}}
 
   lint:
     runs-on: ubuntu-latest

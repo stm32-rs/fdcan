@@ -19,22 +19,18 @@ features = ["fdcan_g0_g4_l5"]
 targets = ["thumbv7em-none-eabihf"]
 
 [features]
-fdcan_g0_g4_l5 = []             # Peripheral map found on G0 G4 L5
-fdcan_h7 = []                   # Peripheral map found on H7
+fdcan_g0_g4_l5 = []                  # Peripheral map found on G0 G4 L5
+fdcan_h7 = []                        # Peripheral map found on H7
+embedded-can-04 = ["embedded-can"]   # Implement embedded-can 0.4 compatible traits
 
 [dependencies]
 bitflags = "1.3.2"
+embedded-can = { version = "0.4", optional = true }
 paste = "1.0"
 vcell = "0.1.3"
 nb = "1.0.0"
 static_assertions = "1.1"
 volatile-register = "0.2.1"
-
-[dependencies.embedded-can-03]
-version = "0.3"
-optional = true
-package = "embedded-can"
-
 
 [profile.test]
 opt-level = "s"
