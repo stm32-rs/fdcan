@@ -1,5 +1,6 @@
 use core::cmp::Ordering;
 
+use crate::id::{StandardId, ExtendedId};
 use crate::Id;
 use crate::IdReg;
 
@@ -47,6 +48,24 @@ impl From<PacFrameFormat> for FrameFormat {
 /// ordering higher priorities greater than lower ones.
 #[derive(Debug, Copy, Clone)]
 pub struct FramePriority(pub(crate) IdReg);
+
+impl From<Id> for FramePriority {
+    fn from(value: Id) -> Self {
+        Self(value.into())
+    }
+}
+
+impl From<StandardId> for FramePriority {
+    fn from(value: StandardId) -> Self {
+        Id::Standard(value).into()
+    }
+}
+
+impl From<ExtendedId> for FramePriority {
+    fn from(value: ExtendedId) -> Self {
+        Id::Extended(value).into()
+    }
+}
 
 /// Ordering is based on the Identifier and frame type (data vs. remote) and can be used to sort
 /// frames by priority.
