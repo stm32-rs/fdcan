@@ -14,7 +14,7 @@
 //!
 //! | Feature | Description |
 //! |---------|-------------|
-//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types, and compatible transmit functions. |
+//! | `embedded-can-04` | Enables conversions from and into [`embedded_can`] 0.4 CAN ID types, and compatible receive transmit functions. Note that only classic CAN is currently supported in `embedded_can`. |
 //!
 //! [`embedded-can`]: https://docs.rs/embedded-can
 
@@ -52,7 +52,7 @@ use filter::{
     StandardFilterSlot, EXTENDED_FILTER_MAX, STANDARD_FILTER_MAX,
 };
 use frame::MergeTxFrameHeader;
-use frame::{RxFrameInfo, TxFrameHeader};
+use frame::{FrameFormat, RxFrameInfo, TxFrameHeader};
 use id::{Id, IdReg};
 use interrupt::{Interrupt, InterruptLine, Interrupts};
 
@@ -1140,6 +1140,36 @@ where
         // Safety: We have a `&mut self` and have unique access to the peripheral.
         unsafe { Rx::<I, M, Fifo1>::conjure().receive(buffer) }
     }
+
+    /// Returns a received Classic CAN frame of a given type from FIFO_0 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    #[inline]
+    pub fn receive0_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Rx::<I, M, Fifo0>::conjure().receive_frame() }
+    }
+
+    /// Returns a received Classic CAN frame of a given type from FIFO_1 if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    #[inline]
+    pub fn receive1_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        // Safety: We have a `&mut self` and have unique access to the peripheral.
+        unsafe { Rx::<I, M, Fifo1>::conjure().receive_frame() }
+    }
 }
 
 /// FdCanControl Struct
@@ -1567,8 +1597,6 @@ where
 
     /// Returns a received frame if available.
     ///
-    /// Returns `Err` when a frame was lost due to buffer overrun.
-    ///
     /// # Panics
     ///
     /// Panics if `buffer` is smaller than the header length.
@@ -1604,6 +1632,33 @@ where
             }
         } else {
             Err(nb::Error::WouldBlock)
+        }
+    }
+
+    /// Returns a received Classic CAN frame of a given type if available.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an `CAN-FD` frame is received, as embedded_can::Frame has no FD support.
+    #[cfg(feature = "embedded-can-04")]
+    pub fn receive_frame<F>(&mut self) -> nb::Result<ReceiveOverrun<F>, Infallible>
+    where
+        F: embedded_can::Frame,
+    {
+        let mut buffer = [0_u8; 8];
+        let overrun = self.receive(&mut buffer)?;
+        let info = overrun.unwrap();
+        if info.frame_format != FrameFormat::Standard {
+            panic!("Received CAN-FD frame");
+        }
+        let frame = if info.rtr {
+            F::new_remote(info.id, info.len as usize)
+        } else {
+            F::new(info.id, &buffer[..info.len as usize])
+        }.unwrap();
+        match overrun {
+            ReceiveOverrun::NoOverrun(_) => Ok(ReceiveOverrun::NoOverrun(frame)),
+            ReceiveOverrun::Overrun(_) => Ok(ReceiveOverrun::Overrun(frame)),
         }
     }
 
