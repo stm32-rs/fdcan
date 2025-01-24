@@ -755,6 +755,10 @@ where
         self.control.config.dbtr = btr;
 
         let can = self.registers();
+        if btr.tdc() {
+            let tcdo = btr.dtseg1() * btr.dbrp();
+            can.tdcr.write(|w| unsafe { w.tdco().bits(tcdo) });
+        }
         can.dbtp.write(|w| unsafe {
             w.dbrp()
                 .bits(btr.dbrp() - 1)
@@ -764,6 +768,8 @@ where
                 .bits(btr.dtseg2() - 1)
                 .dsjw()
                 .bits(btr.dsjw() - 1)
+                .tdc()
+                .bit(btr.tdc())
         });
     }
 
