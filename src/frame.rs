@@ -13,6 +13,7 @@ use crate::message_ram::enums::{DataLength, FilterFrameMatch};
 
 /// Type of Frame
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum FrameFormat {
     /// Frame used by Classic CAN
     Standard = 0,
@@ -46,6 +47,7 @@ impl From<PacFrameFormat> for FrameFormat {
 /// This struct wraps the *arbitration field* and implements `PartialOrd` and `Ord` accordingly,
 /// ordering higher priorities greater than lower ones.
 #[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct FramePriority(pub(crate) IdReg);
 
 /// Ordering is based on the Identifier and frame type (data vs. remote) and can be used to sort
@@ -72,6 +74,7 @@ impl Eq for FramePriority {}
 
 /// Header of a transmit request
 #[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct TxFrameHeader {
     /// Length of the data in bytes
     pub len: u8,
@@ -139,6 +142,7 @@ impl From<&TxBufferElementHeader> for TxFrameHeader {
 
 /// Header of a Received Frame
 #[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub struct RxFrameInfo {
     /// Length in bytes
     pub len: u8,
