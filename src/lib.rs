@@ -599,6 +599,12 @@ where
                 .modify(|_, w| unsafe { w.lse().bits(EXTENDED_FILTER_MAX) });
         }
 
+        // Set all of the per-mailbox/per-buffer transmission interrupt flags,
+        // so that Interrupt::TxComplete and Interrupt::TxCancel will fire if
+        // enabled
+        can.txbtie.write(|w| unsafe { w.tie().bits(u32::MAX) });
+        can.txbcie.write(|w| unsafe { w.cf().bits(u32::MAX) });
+
         for fid in 0..STANDARD_FILTER_MAX {
             self.set_standard_filter((fid as u8).into(), StandardFilter::disable());
         }

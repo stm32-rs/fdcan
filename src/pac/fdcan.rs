@@ -11,6 +11,11 @@ pub use ir_g0_g4_l5 as ir;
 pub use rxgfc_g0_g4_l5 as rxgfc;
 #[cfg(feature = "fdcan_g0_g4_l5")]
 pub use txbc_g0_g4_l5 as txbc;
+#[cfg(feature = "fdcan_g0_g4_l5")]
+pub use txbcie_g0_g4_l5 as txbcie;
+#[cfg(feature = "fdcan_g0_g4_l5")]
+pub use txbtie_g0_g4_l5 as txbtie;
+
 
 #[cfg(feature = "fdcan_h7")]
 pub use ie_h7 as ie;
@@ -24,6 +29,10 @@ pub use ir_h7 as ir;
 pub use rxgfc_h7 as rxgfc;
 #[cfg(feature = "fdcan_h7")]
 pub use txbc_h7 as txbc;
+#[cfg(feature = "fdcan_h7")]
+pub use txbcie_h7 as txbcie;
+#[cfg(feature = "fdcan_h7")]
+pub use txbtie_h7 as txbtie;
 
 ///Register block
 #[repr(C)]
@@ -390,11 +399,13 @@ pub mod txbcf;
 ///TXBTIE register accessor: an alias for `Reg<TXBTIE_SPEC>`
 pub type TXBTIE = crate::Reg<txbtie::TXBTIE_SPEC>;
 ///FDCAN Tx Buffer Transmission Interrupt Enable Register
-pub mod txbtie;
+pub mod txbtie_g0_g4_l5;
+pub mod txbtie_h7;
 ///TXBCIE register accessor: an alias for `Reg<TXBCIE_SPEC>`
 pub type TXBCIE = crate::Reg<txbcie::TXBCIE_SPEC>;
 ///FDCAN Tx Buffer Cancellation Finished Interrupt Enable Register
-pub mod txbcie;
+pub mod txbcie_g0_g4_l5;
+pub mod txbcie_h7;
 ///TXEFC register accessor: an alias for `Reg<TXEFC_SPEC>`
 pub type TXEFC = crate::Reg<txefc::TXEFC_SPEC>;
 ///FDCAN Tx Event FIFO Configuration Register
