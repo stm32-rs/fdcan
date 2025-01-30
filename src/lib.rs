@@ -756,7 +756,8 @@ where
 
         let can = self.registers();
         if btr.tdc() {
-            let tcdo = btr.dtseg1() * btr.dbrp();
+            let tcdo = btr.dtseg1().saturating_mul(btr.dbrp());
+            let tcdo = core::cmp::min(tcdo, 127);
             can.tdcr.write(|w| unsafe { w.tdco().bits(tcdo) });
         }
         can.dbtp.write(|w| unsafe {
