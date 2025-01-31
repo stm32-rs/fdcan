@@ -542,6 +542,12 @@ where
     ) -> Self {
         Self::create_can(t.0.config, t.0.instance)
     }
+
+    /// Returns the current FdCan timestamp counter
+    #[inline]
+    pub fn timestamp(&self) -> u16 {
+        self.control.timestamp()
+    }
 }
 
 impl<I> FdCan<I, PoweredDownMode>
@@ -881,12 +887,6 @@ where
             .rrfe()
             .bit(filter.reject_remote_extended_frames)
         });
-    }
-
-    /// Returns the current FdCan timestamp counter
-    #[inline]
-    pub fn timestamp(&self) -> u16 {
-        self.control.timestamp()
     }
 }
 
