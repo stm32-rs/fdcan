@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 * Update MSRV to 1.60
+* Allow timestamp to be accessed in all modes
 
 ## [v0.2.1] 2024-09-04
 
