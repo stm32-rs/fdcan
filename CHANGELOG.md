@@ -4,6 +4,7 @@
 
 * Update MSRV to 1.60
 * Allow timestamp to be accessed in all modes
+* Implement transceiver delay compensation configuration
 
 ## [v0.2.1] 2024-09-04
 

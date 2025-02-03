@@ -78,12 +78,10 @@ pub struct DataBitTiming {
     pub sync_jump_width: NonZeroU8,
 }
 impl DataBitTiming {
-    // #[inline]
-    // fn tdc(&self) -> u8 {
-    //     let tsd = self.transceiver_delay_compensation as u8;
-    //     //TODO: stm32g4 does not export the TDC field
-    //     todo!()
-    // }
+    #[inline]
+    pub(crate) fn tdc(&self) -> bool {
+        self.transceiver_delay_compensation
+    }
     #[inline]
     pub(crate) fn dbrp(&self) -> u8 {
         u8::from(self.prescaler) & 0x1F
